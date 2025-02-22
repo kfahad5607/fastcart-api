@@ -1,7 +1,20 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from api.v1.routes import products
+from models.products import Product
+from models.orders import Order, OrderItem
+from db.sql import init_db
+from utils.logger import logger
 
-app = FastAPI(debug=True)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("server is starting")
+    await init_db()
+    yield
+    logger.critical("server is shutting down")
+
+app = FastAPI(debug=True, lifespan=lifespan)
 
 # Include routers
 app.include_router(
