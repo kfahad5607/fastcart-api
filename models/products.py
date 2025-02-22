@@ -1,8 +1,9 @@
 from datetime import datetime
-from typing import Optional
-from sqlmodel import SQLModel, Column, Computed, DateTime, BigInteger, Field, func
+from typing import List, Optional
+from sqlmodel import SQLModel, Column, Relationship, Computed, DateTime, BigInteger, Field, func
 from sqlalchemy import Index
 from sqlalchemy.dialects.postgresql import TSVECTOR
+from models.orders import OrderBase, Order, OrderItem
 from utils.helpers import get_current_timestamp
 
 class ProductBase(SQLModel):
@@ -24,6 +25,9 @@ class Product(ProductBase, table=True):
         onupdate=func.now()
     ))
 
+    order_links: List[OrderItem] = Relationship(back_populates="product")
+    # orders: List[Order] = Relationship(back_populates="products", link_model=OrderItem)
+
     search_vector: str = Field(
         sa_column=Column(
             TSVECTOR,
@@ -38,7 +42,7 @@ class Product(ProductBase, table=True):
         Index("idx_product_search", "search_vector", postgresql_using="gin"),
     )
 
-class ProductPublic(ProductBase):
+class ProductRead(ProductBase):
     id: int = Product.id
 
 class ProductCreate(ProductBase):
@@ -46,3 +50,21 @@ class ProductCreate(ProductBase):
 
 class ProductUpdate(ProductBase):
     pass
+
+class ProductOrderItemRead(SQLModel):
+    product_id: int = Product.id
+    product_name: str = Product.name
+    quantity: int = OrderItem.quantity
+    price: float = OrderItem.unit_price
+
+class OrderWithProductRead(OrderBase):
+    id: int = Order.id
+    items: List[ProductOrderItemRead]
+    created_at: datetime = Order.created_at
+
+product_public_fields = [
+    Product.id,
+    Product.name,
+    Product.price,
+    Product.stock,
+]

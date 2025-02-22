@@ -1,9 +1,11 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from api.v1.routes import products
+from fastapi.responses import JSONResponse
+from api.v1.routes import products, orders
 from models.products import Product
 from models.orders import Order, OrderItem
 from db.sql import init_db
+from utils.exceptions import BaseAppException
 from utils.logger import logger
 
 
@@ -16,6 +18,18 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(debug=True, lifespan=lifespan)
 
+@app.exception_handler(BaseAppException)
+async def app_exception_handler(request, exc):
+    import traceback
+    logger.exception(f"Application error traceback starts ==>")
+    logger.error(traceback.format_exc())
+    logger.exception(f"Application error traceback ends\n")
+    logger.exception(f"Application error msg ==> {exc.message}")
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"error": exc.message}
+    )    
+
 # Include routers
 app.include_router(
     products.router, 
@@ -23,7 +37,7 @@ app.include_router(
     tags=["products"]
 )
 app.include_router(
-    products.router, 
+    orders.router, 
     prefix="/api/v1/orders", 
     tags=["orders"]
 )
