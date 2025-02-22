@@ -5,6 +5,16 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - APP_NAME=${APP_NAME}
+      - DEBUG_MODE=${DEBUG_MODE}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - .:/app
@@ -15,14 +25,16 @@ services:
   db:
     image: postgres:17.2-alpine
     container_name: postgres_db
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: fastcartdb
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      - fastcart-api-postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
   pgadmin:
@@ -34,13 +46,13 @@ services:
     ports:
       - "5050:80"
     volumes:
-      - fastcart-api-pgadmin_data:/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
     networks:
       - app-network
 
 volumes:
-  fastcart-api-postgres_data:
-  fastcart-api-pgadmin_data:
+  postgres_data:
+  pgadmin_data:
 
 networks:
   app-network:
