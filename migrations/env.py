@@ -16,7 +16,9 @@ from models.orders import Order, OrderItem
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.DB_URL)
+cmd_line_db_url = context.get_x_argument(as_dictionary=True).get("db_url", None)
+DB_URL = cmd_line_db_url or settings.DB_URL
+config.set_main_option("sqlalchemy.url", DB_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

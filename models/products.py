@@ -26,7 +26,6 @@ class Product(ProductBase, table=True):
     ))
 
     order_links: List[OrderItem] = Relationship(back_populates="product")
-    # orders: List[Order] = Relationship(back_populates="products", link_model=OrderItem)
 
     search_vector: str = Field(
         sa_column=Column(
@@ -65,6 +64,7 @@ class OrderWithProductRead(OrderBase):
 product_public_fields = [
     Product.id,
     Product.name,
+    Product.description,
     Product.price,
     Product.stock,
 ]

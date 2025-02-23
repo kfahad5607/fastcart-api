@@ -39,13 +39,12 @@ class Order(OrderBase, table=True):
     ))
 
     product_links: List[OrderItem] = Relationship(back_populates="order")
-    # products: List["Product"] = Relationship(back_populates="orders", link_model=OrderItem)
 
 class OrderItemCreate(SQLModel):
     product_id: int = OrderItem.product_id
     quantity: int = OrderItem.quantity
 
-class OrderCreate(OrderBase):    
+class OrderCreate(SQLModel):    
     items: List[OrderItemCreate]
 
 class OrderRead(OrderBase):
