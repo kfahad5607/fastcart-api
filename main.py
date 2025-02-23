@@ -1,22 +1,11 @@
-from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from api.v1.routes import products, orders
-from models.products import Product
-from models.orders import Order, OrderItem
-from db.sql import init_db
 from utils.exceptions import BaseAppException
 from utils.logger import logger
+from config import settings
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    logger.info("server is starting")
-    await init_db()
-    yield
-    logger.critical("server is shutting down")
-
-app = FastAPI(debug=True, lifespan=lifespan)
+app = FastAPI(title=settings.APP_NAME, debug=settings.DEBUG_MODE)
 
 @app.exception_handler(BaseAppException)
 async def app_exception_handler(request, exc):
