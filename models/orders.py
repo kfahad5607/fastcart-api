@@ -15,14 +15,14 @@ class OrderStatus(str, Enum):
 class OrderItem(SQLModel, table=True):
     order_id: int = Field(foreign_key="order.id", primary_key=True, ondelete="CASCADE")
     product_id: int = Field(foreign_key="product.id", primary_key=True, ondelete="CASCADE")
-    quantity: int = Field(ge=1, description="Quantity must be at least 1")
+    quantity: int = Field(gt=0, description="Quantity must be at least 1")
     unit_price: float = Field(gt=0, description="Price per unit at time of order")
 
     product: "Product" = Relationship(back_populates="order_links")
     order: "Order" = Relationship(back_populates="product_links")
 
 class OrderBase(SQLModel):
-    total_price: float = Field(default=0, description="Auto-calculated total order price")
+    total_price: float = Field(gt=0, description="Total order price")
     status: OrderStatus = Field(sa_column=Column(SQLAlchemyEnum(OrderStatus)), default=OrderStatus.PENDING)
 
 class Order(OrderBase, table=True):
@@ -41,8 +41,8 @@ class Order(OrderBase, table=True):
     product_links: List[OrderItem] = Relationship(back_populates="order")
 
 class OrderItemCreate(SQLModel):
-    product_id: int = OrderItem.product_id
-    quantity: int = OrderItem.quantity
+    product_id: int = Field(gt=0, description="Product ID must be at least 1")
+    quantity: int = Field(gt=0, description="Quantity must be at least 1")
 
 class OrderCreate(SQLModel):    
     items: List[OrderItemCreate]

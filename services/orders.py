@@ -22,6 +22,11 @@ def normalize_order_items(order_items: List[OrderItemCreate]):
 
 async def create_order(session: AsyncSession, order_data: OrderCreate):
     try:
+        if len(order_data.items) == 0:
+            raise ValidationException(
+                message="Order must contain at least one item"
+            )
+
         order_data.items = normalize_order_items(order_data.items)
         product_ids = [p.product_id for p in order_data.items]
 
