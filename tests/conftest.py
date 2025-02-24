@@ -5,13 +5,12 @@ from typing import AsyncIterator, Generator
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 from main import app
 from db.sql import get_session
+from config import settings
 
-TEST_DB_URL = "postgresql+asyncpg://testuser:testpass@localhost:5433/test_db"
-engine = create_async_engine(TEST_DB_URL, echo=True)
+engine = create_async_engine(settings.TEST_DB_URL, echo=True)
 async_session = async_sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )
@@ -25,8 +24,7 @@ def event_loop(request) -> Generator:  # noqa: indirect usage
 @pytest.fixture(scope="session", autouse=True)
 def setup_database():
     """Runs the setup script to start test DB & apply migrations."""
-    os.environ["TESTING"] = "1"
-    subprocess.run(["./scripts/setup_test_db.sh"], check=True)
+    subprocess.run(["./scripts/setup_test_db.sh", settings.TEST_DB_URL], check=True)
 
     yield  # Run tests
 
@@ -45,6 +43,6 @@ async def get_test_session() -> AsyncIterator[AsyncSession]:
 async def client():
     app.dependency_overrides[get_session] = get_test_session
     """Provides a test client for FastAPI."""
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test/api/v1/") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test/api/v1") as ac:
         yield ac
     app.dependency_overrides.clear()
