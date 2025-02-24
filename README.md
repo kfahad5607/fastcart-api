@@ -94,7 +94,7 @@ Visit [http://localhost:8000/docs](http://localhost:8000/docs) to explore API en
 
 ### 9. Run Tests
 ```sh
-python3 -m pytest
+python3 -m pytest -v
 ```
 
 ---
