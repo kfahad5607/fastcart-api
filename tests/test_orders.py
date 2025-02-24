@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 from models.products import ProductCreate
-from models.orders import Order, OrderCreate, OrderItemCreate
+from models.orders import Order, OrderCreate, OrderItemCreate, OrderStatus
 from services.products import create_product
 from services.orders import create_order
 from utils.exceptions import ValidationException
@@ -59,7 +59,7 @@ async def test_create_order_success(db_session: AsyncSession):
 
     assert db_order.id is not None
     assert db_order.total_price == total_price
-    assert db_order.status == "pending"
+    assert db_order.status == OrderStatus.PENDING
 
 
 @pytest.mark.asyncio

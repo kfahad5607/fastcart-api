@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, List
-from sqlmodel import SQLModel, Column, Relationship, DateTime, BigInteger, Field, func, Enum as SQLAlchemyEnum
+from sqlmodel import SQLModel, Column, DateTime, BigInteger, Enum as SQLAlchemyEnum, Relationship, ForeignKey, Field, func
 from utils.helpers import get_current_timestamp
 
 if TYPE_CHECKING:
@@ -13,8 +13,8 @@ class OrderStatus(str, Enum):
     COMPLETED = "completed"
 
 class OrderItem(SQLModel, table=True):
-    order_id: int = Field(foreign_key="order.id", primary_key=True)
-    product_id: int = Field(foreign_key="product.id", primary_key=True)
+    order_id: int = Field(foreign_key="order.id", primary_key=True, ondelete="CASCADE")
+    product_id: int = Field(foreign_key="product.id", primary_key=True, ondelete="CASCADE")
     quantity: int = Field(ge=1, description="Quantity must be at least 1")
     unit_price: float = Field(gt=0, description="Price per unit at time of order")
 
