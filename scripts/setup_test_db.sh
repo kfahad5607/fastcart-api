@@ -13,7 +13,7 @@ fi
 # Start the test DB container if not running
 if [ ! "$(docker ps -q -f name=test_postgres_db)" ]; then
     echo "📦 Starting test database..."
-    docker compose -f docker-compose.test.yml up -d
+    docker-compose -f docker-compose.test.yml up -d
 fi
 
 # Wait until the PostgreSQL container is in a "healthy" state
