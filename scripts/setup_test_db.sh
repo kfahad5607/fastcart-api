@@ -15,5 +15,7 @@ TESTING=1 alembic -x db_url="postgresql+asyncpg://testuser:testpass@localhost:54
 
 # Seed some test data
 echo "🌱 Seeding test data..."
+python3 -m seeds.products -n 10 --clear_existing
+python3 -m seeds.orders -n 10 --clear_existing
 
 echo "✅ Test database ready!"

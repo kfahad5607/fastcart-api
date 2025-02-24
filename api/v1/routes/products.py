@@ -7,7 +7,6 @@ from models.products import ProductCreate, ProductRead
 from services.products import get_products, create_product
 from utils.exceptions import BaseAppException, ValidationException
 from utils.logger import logger
-from pydantic import ValidationError
 
 
 router = APIRouter()

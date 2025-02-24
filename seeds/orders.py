@@ -1,3 +1,4 @@
+import argparse
 from random import randint, choice
 from models.products import Product
 from models.orders import Order, OrderItem
@@ -79,6 +80,17 @@ async def seed_orders(n=1000, clear_existing=False):
     except Exception as e:
         logger.error(f"Exception in seed_orders ==> {e}")
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Seed orders script")
+    parser.add_argument("-n", type=int, help="Number of orders to seed", required=False)
+    parser.add_argument("--clear_existing", action="store_true", help="Clear existing orders before seeding")
+    return parser.parse_args()
+
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(seed_orders(n=200, clear_existing=True))
+
+    args = parse_args()
+    n = args.n if args.n else 200
+    clear_existing = bool(args.clear_existing)
+
+    asyncio.run(seed_orders(n=n, clear_existing=clear_existing))
