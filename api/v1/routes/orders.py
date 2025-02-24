@@ -5,22 +5,8 @@ from models.orders import OrderCreate
 from models.products import OrderWithProductRead
 from services.orders import create_order
 from utils.exceptions import BaseAppException, ValidationException
-from utils.logger import logger
 
 router = APIRouter()
-
-@router.get("/")
-async def handle_get_orders():
-    try:
-        return {
-            'current_page': 1,
-            'page_size': 10,
-            'total_records': 100,
-            'total_pages': 10,
-            'data': []
-        }
-    except Exception as e:
-        logger.error(f"Exception in get_orders ==> {e}")
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=OrderWithProductRead)
 async def handle_create_order(order_data: OrderCreate, session: AsyncSession=Depends(get_session)):

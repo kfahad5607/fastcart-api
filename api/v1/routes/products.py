@@ -26,13 +26,10 @@ async def handle_get_products(
     except Exception as e:
         raise BaseAppException("Could not get the products. Please try again later.") from e
 
-# @router.post("/", status_code=status.HTTP_201_CREATED)
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProductRead)
 async def handle_create_product(product_data: ProductCreate, session: AsyncSession=Depends(get_session)):
     try:
         return await create_product(session, product_data=product_data)
-    # except ValidationError as e:
-    #     logger.error(f"ValidationError  ==> {type(e)=}")
     except Exception as e:
         logger.error(f"ERRRORR  ==> {type(e)=}")
         raise BaseAppException("Could not create the product. Please try again later.") from e
